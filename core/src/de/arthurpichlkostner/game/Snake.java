@@ -87,31 +87,8 @@ public class Snake extends InputAdapter {
         applesEaten = 0;
     }
 
-    private void randomKick() {
-        Random random = new Random();
-        float angle = MathUtils.PI2 * random.nextFloat();
-        velocity.x += KICK_VELOCITY * MathUtils.cos(angle);
-        velocity.y += KICK_VELOCITY * MathUtils.sin(angle);
-    }
-
-
 
     public void update(float delta) {
-
-        // Growing and shrinking
-        if (Gdx.input.isKeyPressed(Keys.Z)){
-            radiusMultiplier += delta * RADIUS_GROWTH_RATE;
-        }
-        if (Gdx.input.isKeyPressed(Keys.X)){
-            radiusMultiplier -= delta * RADIUS_GROWTH_RATE;
-            radiusMultiplier = Math.max(radiusMultiplier, MIN_RADIUS_MULTIPLIER);
-        }
-
-        if (following){
-            velocity.x = 2 * (targetPosition.x - position.x);
-            velocity.y = 2 * (targetPosition.y - position.y);
-        }
-
         // Movement
         if (Gdx.input.isKeyPressed(Keys.LEFT)){
             velocity.x -= delta * ACCELERATION;
@@ -135,8 +112,6 @@ public class Snake extends InputAdapter {
 
 
         // Accelerometer Movement
-
-
         float x_dir = Gdx.input.getAccelerometerX();
         float y_dir = Gdx.input.getAccelerometerY();
 
@@ -297,59 +272,28 @@ public class Snake extends InputAdapter {
     @Override
     public boolean keyDown(int keycode) {
 
-        if (keycode == Keys.SPACE){
-            randomKick();
-        }
-
         if (keycode == Keys.R){
             init();
         }
-
-
         return true;
     }
-
-    Vector2 flickStart;
-    Vector2 targetPosition;
-    boolean flicking = false;
-    boolean following = false;
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
 
         Vector2 worldClick = viewport.unproject(new Vector2(screenX, screenY));
 
-
-        if (worldClick.dst(position) < baseRadius * radiusMultiplier){
-            Gdx.app.log("Ball", "Click in the ball, starting flick.");
-            flicking = true;
-            flickStart = worldClick;
-        } else {
-            targetPosition = worldClick;
-            following = true;
-        }
-
-
         return true;
     }
 
     @Override
     public boolean touchDragged(int screenX, int screenY, int pointer) {
-        targetPosition = viewport.unproject(new Vector2(screenX, screenY));
+
         return true;
     }
 
     @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-        if (flicking){
-            flicking = false;
-            Vector2 flickEnd = viewport.unproject(new Vector2(screenX, screenY));
-
-            velocity.x += 3 *  (flickEnd.x - flickStart.x);
-            velocity.y += 3 * (flickEnd.y - flickStart.y);
-            Gdx.app.log("Ball", "End flick");
-        }
-        following = false;
 
         return true;
     }

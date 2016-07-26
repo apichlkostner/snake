@@ -9,8 +9,11 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
+import com.badlogic.gdx.utils.I18NBundle;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
+
+import java.util.Locale;
 
 
 public class SnakeGameScreen extends ScreenAdapter {
@@ -18,6 +21,8 @@ public class SnakeGameScreen extends ScreenAdapter {
     public static final float WORLD_SIZE = 480.0f;
 
     private Preferences prefs;
+
+	I18NBundle snakeStrings;
 
     ShapeRenderer renderer;
     ExtendViewport viewport;
@@ -34,7 +39,8 @@ public class SnakeGameScreen extends ScreenAdapter {
         // Scale it up
         font.getData().setScale(1);
         // Set the filter
-        font.getRegion().getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        font.getRegion().getTexture().setFilter(Texture.TextureFilter.Linear,
+                Texture.TextureFilter.Linear);
         renderer.setAutoShapeType(true);
         viewport = new ExtendViewport(WORLD_SIZE, WORLD_SIZE);
 
@@ -44,6 +50,11 @@ public class SnakeGameScreen extends ScreenAdapter {
 
         snake = new Snake(viewport, highscore, prefs);
         Gdx.input.setInputProcessor(snake);
+
+		Locale locale = Locale.getDefault();
+        snakeStrings = I18NBundle.createBundle(Gdx.files.internal("SnakeStrings"),
+                locale, "windows-1252");
+        Gdx.app.log("Init", "Locale = " + locale);
     }
 
     @Override
@@ -76,9 +87,12 @@ public class SnakeGameScreen extends ScreenAdapter {
         long deltaTime = TimeUtils.millis() - snake.startTime;
 
         batch.begin();
-        font.draw(batch, "Time: "+deltaTime/1000, viewport.getWorldWidth()-200, viewport.getWorldHeight()-10);
-        font.draw(batch, "Apples: "+snake.applesEaten, viewport.getWorldWidth()-200, viewport.getWorldHeight()-25);
-        font.draw(batch, "Highscore: "+snake.applesEatenHighscore, viewport.getWorldWidth()-200, viewport.getWorldHeight()-40);
+        font.draw(batch, snakeStrings.get("time")+": "+deltaTime/1000, viewport.getWorldWidth()-200,
+                viewport.getWorldHeight()-10);
+        font.draw(batch, snakeStrings.get("apples")+": "+snake.applesEaten,
+                viewport.getWorldWidth()-200, viewport.getWorldHeight()-25);
+        font.draw(batch, snakeStrings.get("highscore")+": "+snake.applesEatenHighscore,
+                viewport.getWorldWidth()-200, viewport.getWorldHeight()-40);
         batch.end();
     }
 }
