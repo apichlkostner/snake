@@ -21,8 +21,8 @@ public class SnakeGameScreen extends ScreenAdapter {
     public static final float WORLD_SIZE = 480.0f;
 
     private Preferences prefs;
-
-	I18NBundle snakeStrings;
+    private Apples apples;
+    I18NBundle snakeStrings;
 
     ShapeRenderer renderer;
     ExtendViewport viewport;
@@ -48,7 +48,8 @@ public class SnakeGameScreen extends ScreenAdapter {
         prefs = Gdx.app.getPreferences("SnakePreferences");
         int highscore = prefs.getInteger("highscore", 0);
 
-        snake = new Snake(viewport, highscore, prefs);
+        apples = new Apples();
+        snake = new Snake(viewport, highscore, prefs, apples);
         Gdx.input.setInputProcessor(snake);
 
 		Locale locale = Locale.getDefault();
