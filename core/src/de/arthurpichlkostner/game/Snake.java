@@ -221,18 +221,36 @@ public class Snake extends InputAdapter {
     }
 
     public void render(ShapeRenderer renderer) {
+        Vector2 lastPos = position;
+
         renderer.set(ShapeType.Filled);
-        renderer.setColor(Color.BLUE);
-        for (Vector2 pos : trajectory)
+
+        // draw body segments
+        for (Vector2 pos : trajectory) {
+            renderer.setColor(Color.BLUE);
             renderer.circle(pos.x, pos.y, baseRadius * radiusMultiplier);
 
+            // draw pattern on body element
+            renderer.setColor(Color.GRAY);
+
+            Vector2 orientation = pos.cpy().sub(lastPos).setLength(5);
+            Vector2 ortho = new Vector2(orientation.y, -orientation.x);
+            Vector2 p1 = pos.cpy().sub(orientation);
+            Vector2 p2 = pos.cpy().add(orientation).add(ortho);
+            Vector2 p3 = pos.cpy().add(orientation).sub(ortho);
+            renderer.triangle(p1.x, p1.y, p2.x, p2.y, p3.x, p3.y);
+
+            lastPos = pos;
+        }
+
+        // draw head
         Vector2 orientation = position.cpy().sub(trajectory.getFirst()).setLength(8);
         Vector2 ortho = new Vector2(orientation.y, -orientation.x);
         renderer.setColor(Color.NAVY);
         renderer.circle(position.x, position.y, baseRadius * radiusMultiplier);
         renderer.setColor(Color.WHITE);
-        //renderer.line(position, position.cpy().add(orientation));
-        //renderer.line(position, position.cpy().add(ortho));
+
+        // draw eyes on head
         Vector2 eyepos1 = new Vector2(position.cpy().add(orientation.cpy().add(ortho).setLength(5)));
         renderer.circle(eyepos1.x, eyepos1.y, 3);
         Vector2 eyepos2 = new Vector2(position.cpy().add(orientation.cpy().sub(ortho).setLength(5)));
